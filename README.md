@@ -31,44 +31,46 @@ cordova plugin add https://github.com/nchutchind/cordova-plugin-streaming-media
 ## Usage
 
 ```javascript
-  var videoUrl = STREAMING_VIDEO_URL;
+  const videoUrl = STREAMING_VIDEO_URL;
 
   // Just play a video
   window.plugins.streamingMedia.playVideo(videoUrl);
 
   // Play a video with callbacks
-  var options = {
-    successCallback: function() {
-      console.log("Video was closed without error.");
+  const options = {
+    successCallback: function(mediaPlayerResult) {
+      console.log('Video was closed without error.');
     },
-    errorCallback: function(errMsg) {
-      console.log("Error! " + errMsg);
+    errorCallback: function(mediaPlayerResult) {
+      console.log(`Error! ${mediaPlayerResult.errorMessage}`);
     },
     orientation: 'landscape',
     shouldAutoClose: true,  // true(default)/false
-    controls: true // true(default)/false. Used to hide controls on fullscreen
+    controls: true, // true(default)/false. Used to hide controls on fullscreen
+    startTimeInMs: 5000 // (optional) Alternatively instead of using this option you can call: window.plugins.streamingMedia.playVideoAtTime(videoUrl, 5000)
   };
   window.plugins.streamingMedia.playVideo(videoUrl, options);
 
 
-  var audioUrl = STREAMING_AUDIO_URL;
+  const audioUrl = STREAMING_AUDIO_URL;
 
   // Play an audio file (not recommended, since the screen will be plain black)
   window.plugins.streamingMedia.playAudio(audioUrl);
 
   // Play an audio file with options (all options optional)
-  var options = {
-    bgColor: "#FFFFFF",
-    bgImage: "<SWEET_BACKGROUND_IMAGE>",
-    bgImageScale: "fit", // other valid values: "stretch", "aspectStretch"
+  const options = {
+    bgColor: '#FFFFFF',
+    bgImage: '<SWEET_BACKGROUND_IMAGE>',
+    bgImageScale: 'fit', // other valid values: 'stretch', 'aspectStretch'
     initFullscreen: false, // true is default. iOS only.
     keepAwake: false, // prevents device from sleeping. true is default. Android only.
-    successCallback: function() {
-      console.log("Player closed without error.");
+    successCallback: function(mediaPlayerResult) {
+      console.log('Player closed without error.');
     },
-    errorCallback: function(errMsg) {
-      console.log("Error! " + errMsg);
-    }
+    errorCallback: function(mediaPlayerResult) {
+      console.log(`Error! ${mediaPlayerResult.errorMessage}`);
+    },
+    startTimeInMs: 5000 // (optional) Alternatively instead of using this option you can call: window.plugins.streamingMedia.playAudioAtTime(audioUrl, 5000)
   };
   window.plugins.streamingMedia.playAudio(audioUrl, options);
 
@@ -79,7 +81,16 @@ cordova plugin add https://github.com/nchutchind/cordova-plugin-streaming-media
   window.plugins.streamingMedia.pauseAudio();
 
   // Resume current audio (iOS only)
-  window.plugins.streamingMedia.resumeAudio();  
+  window.plugins.streamingMedia.resumeAudio();
+
+
+  // Content of `mediaPlayerResult`
+  const mediaPlayerResult = {
+    errorMessage: 'Everybody is dead, Dave!', // Present only in `errorCallback`.
+    currentPositionInMs: 5000, // Position in media player, when user closed it. When user reached the end of the media, the value is 0 and when then plugin is unable to get the position, the value is -1.
+    mediaDurationInMs: 10000, // Length of the media. When the plugin is unable to get it, the value is -1.
+    finishedTheMedia: true // True is user reached the end of the media duration.
+  }
 
 ```
 

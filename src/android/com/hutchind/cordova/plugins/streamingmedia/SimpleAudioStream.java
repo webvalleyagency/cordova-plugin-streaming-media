@@ -30,6 +30,7 @@ MediaController.MediaPlayerControl, MediaPlayer.OnSeekCompleteListener {
 	private String mAudioUrl;
 	private Boolean mShouldAutoClose = true;
 	private Integer mStartTimeInMs = 0;
+	private Boolean finishedTheAudio = false;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -162,11 +163,35 @@ MediaController.MediaPlayerControl, MediaPlayer.OnSeekCompleteListener {
 	}
 
 	public int getDuration() {
-		return (mMediaPlayer!=null) ? mMediaPlayer.getDuration() : 0;
+		if (mMediaPlayer == null) {
+			return 0;
+		} else {
+			Integer duration = -1;
+			try {
+				duration = mMediaPlayer.getDuration();
+			} catch (Throwable t) {
+				Log.e(TAG, "Unable to get duration of the video");
+				Log.e(TAG, t.toString());
+			}
+
+			return duration;
+		}
 	}
 
 	public int getCurrentPosition() {
-		return (mMediaPlayer!=null) ? mMediaPlayer.getCurrentPosition() : 0;
+		if (mMediaPlayer == null) {
+			return 0;
+		} else {
+			Integer currentPositionInMs = -1;
+			try {
+				currentPositionInMs = mMediaPlayer.getCurrentPosition();
+			} catch (Throwable t) {
+				Log.e(TAG, "Unable to get current position of player.");
+				Log.e(TAG, t.toString());
+			}
+	
+			return currentPositionInMs;
+		}
 	}
 
 	public void seekTo(int i) {
@@ -223,7 +248,11 @@ MediaController.MediaPlayerControl, MediaPlayer.OnSeekCompleteListener {
 
 	private void wrapItUp(int resultCode, String message) {
 		Intent intent = new Intent();
-		intent.putExtra("message", message);
+		intent.putExtra("errorMessage", message);
+		intent.putExtra("currentPositionInMs", getCurrentPosition());
+		intent.putExtra("mediaDurationInMs", getDuration());
+		intent.putExtra("finishedTheMedia", finishedTheAudio);
+
 		setResult(resultCode, intent);
 		finish();
 	}
@@ -231,6 +260,7 @@ MediaController.MediaPlayerControl, MediaPlayer.OnSeekCompleteListener {
 
 	@Override
 	public void onCompletion(MediaPlayer mp) {
+		finishedTheAudio = true;
 		stop();
 		if (mShouldAutoClose) {
 			Log.v(TAG, "FINISHING ACTIVITY");

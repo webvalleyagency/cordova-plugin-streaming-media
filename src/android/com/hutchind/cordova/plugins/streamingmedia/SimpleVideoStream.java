@@ -34,6 +34,7 @@ MediaPlayer.OnSeekCompleteListener {
 	private Boolean mShouldAutoClose = true;
 	private boolean mControls;
 	private Integer mStartTimeInMs = 0;
+	private Boolean finishedTheVideo = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -152,13 +153,18 @@ MediaPlayer.OnSeekCompleteListener {
 	private void wrapItUp(int resultCode, String message) {
 		Log.d(TAG, "wrapItUp was triggered.");
 		Intent intent = new Intent();
-		intent.putExtra("message", message);
+
+		intent.putExtra("errorMessage", message);
+		intent.putExtra("currentPositionInMs", tryToGetCurrentPositionOfVideo());
+		intent.putExtra("mediaDurationInMs", tryToGetVideoDuration());
+		intent.putExtra("finishedTheMedia", finishedTheVideo);
 		setResult(resultCode, intent);
 		finish();
 	}
 
 	public void onCompletion(MediaPlayer mp) {
 		Log.d(TAG, "onCompletion triggered.");
+		finishedTheVideo = true;
 		stop();
 		if (mShouldAutoClose) {
 			wrapItUp(RESULT_OK, null);
@@ -212,5 +218,29 @@ MediaPlayer.OnSeekCompleteListener {
 		if (mMediaController != null)
 			mMediaController.show();
 		return false;
+	}
+
+	private int tryToGetCurrentPositionOfVideo() {
+		Integer currentPositionInMs = -1;
+		try {
+			currentPositionInMs = mVideoView.getCurrentPosition();
+		} catch (Throwable t) {
+			Log.e(TAG, "Unable to get current position of player.");
+			Log.e(TAG, t.toString());
+		}
+
+		return currentPositionInMs;
+	}
+
+	private int tryToGetVideoDuration() {
+		Integer duration = -1;
+		try {
+			duration = mVideoView.getDuration();
+		} catch (Throwable t) {
+			Log.e(TAG, "Unable to get duration of the video");
+			Log.e(TAG, t.toString());
+		}
+
+		return duration;
 	}
 }

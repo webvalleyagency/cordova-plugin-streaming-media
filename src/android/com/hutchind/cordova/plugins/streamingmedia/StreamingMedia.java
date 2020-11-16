@@ -97,15 +97,29 @@ public class StreamingMedia extends CordovaPlugin {
 		Log.v(TAG, "onActivityResult: " + requestCode + " " + resultCode);
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (ACTIVITY_CODE_PLAY_MEDIA == requestCode) {
+			JSONObject resultData = new JSONObject();
+			if (intent != null) {
+				tryToPutPropertyToObject(resultData, "currentPositionInMs", intent.getIntExtra("currentPositionInMs", -1));
+				tryToPutPropertyToObject(resultData, "mediaDurationInMs", intent.getIntExtra("mediaDurationInMs", -1));
+				tryToPutPropertyToObject(resultData, "finishedTheMedia", intent.getBooleanExtra("finishedTheMedia", false));
+				tryToPutPropertyToObject(resultData, "errorMessage", intent.getStringExtra("errorMessage"));
+			}
+
 			if (Activity.RESULT_OK == resultCode) {
-				this.callbackContext.success();
+				this.callbackContext.success(resultData);
 			} else if (Activity.RESULT_CANCELED == resultCode) {
-				String errMsg = "Error";
-				if (intent != null && intent.hasExtra("message")) {
-					errMsg = intent.getStringExtra("message");
-				}
-				this.callbackContext.error(errMsg);
+				this.callbackContext.error(resultData);
 			}
 		}
+	}
+
+	private <VALUE_TYPE> JSONObject tryToPutPropertyToObject(JSONObject object, String key, VALUE_TYPE value) {
+		try {
+			object.put(key, value);
+		} catch (JSONException e) {
+			Log.e(TAG, "JSONException while trying to set property: '" + key + "' with value: '" + value + "'");
+		}
+
+		return object;
 	}
 }
