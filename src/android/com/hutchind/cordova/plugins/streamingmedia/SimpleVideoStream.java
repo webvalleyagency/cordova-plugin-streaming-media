@@ -23,7 +23,8 @@ import android.widget.VideoView;
 
 public class SimpleVideoStream extends Activity implements
 MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
-MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
+MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener,
+MediaPlayer.OnSeekCompleteListener {
 	private String TAG = getClass().getSimpleName();
 	private VideoView mVideoView = null;
 	private MediaPlayer mMediaPlayer = null;
@@ -32,6 +33,7 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 	private String mVideoUrl;
 	private Boolean mShouldAutoClose = true;
 	private boolean mControls;
+	private Integer mStartTimeInMs = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 		mVideoUrl = b.getString("mediaUrl");
 		mShouldAutoClose = b.getBoolean("shouldAutoClose", true);
 		mControls = b.getBoolean("controls", true);
+		mStartTimeInMs = b.getInt("startTimeInMs", 0);
 
 		RelativeLayout relLayout = new RelativeLayout(this);
 		relLayout.setBackgroundColor(Color.BLACK);
@@ -117,10 +120,16 @@ MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener {
 	public void onPrepared(MediaPlayer mp) {
 		Log.d(TAG, "Stream is prepared");
 		mMediaPlayer = mp;
+		mMediaPlayer.setOnSeekCompleteListener(this);
 		mMediaPlayer.setOnBufferingUpdateListener(this);
 		mVideoView.requestFocus();
-		mVideoView.start();
+		mVideoView.seekTo(mStartTimeInMs);
 		mVideoView.postDelayed(checkIfPlaying, 0);
+	}
+
+	@Override
+	public void onSeekComplete(MediaPlayer mp) {
+		mVideoView.start();
 	}
 
 	private void pause() {

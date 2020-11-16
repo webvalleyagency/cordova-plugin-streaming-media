@@ -20,7 +20,7 @@ import android.widget.MediaController;
 public class SimpleAudioStream extends Activity implements
 MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
 MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener,
-MediaController.MediaPlayerControl {
+MediaController.MediaPlayerControl, MediaPlayer.OnSeekCompleteListener {
 
 	private String TAG = getClass().getSimpleName();
 	private MediaPlayer mMediaPlayer = null;
@@ -29,6 +29,7 @@ MediaController.MediaPlayerControl {
 	private View mMediaControllerView;
 	private String mAudioUrl;
 	private Boolean mShouldAutoClose = true;
+	private Integer mStartTimeInMs = 0;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -36,6 +37,7 @@ MediaController.MediaPlayerControl {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		Bundle b = getIntent().getExtras();
 		mAudioUrl = b.getString("mediaUrl");
+		mStartTimeInMs = b.getInt("startTimeInMs", 0);
 		String backgroundColor = b.getString("bgColor");
 		String backgroundImagePath = b.getString("bgImage");
 		String backgroundImageScale = b.getString("bgImageScale");
@@ -102,6 +104,7 @@ MediaController.MediaPlayerControl {
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mMediaPlayer.setOnPreparedListener(this);
 			mMediaPlayer.setOnCompletionListener(this);
+			mMediaPlayer.setOnSeekCompleteListener(this);
 			mMediaPlayer.setOnBufferingUpdateListener(this);
 			mMediaPlayer.setOnErrorListener(this);
 			mMediaPlayer.setScreenOnWhilePlaying(true);
@@ -120,9 +123,14 @@ MediaController.MediaPlayerControl {
 		Log.d(TAG, "Stream is prepared");
 		mMediaController.setMediaPlayer(this);
 		mMediaController.setAnchorView(mMediaControllerView);
-		mMediaPlayer.start();
+		mMediaPlayer.seekTo(mStartTimeInMs);
 		mMediaController.setEnabled(true);
 		mMediaController.show();
+	}
+
+	@Override
+	public void onSeekComplete(MediaPlayer mp) {
+		mMediaPlayer.start();
 	}
 
 	@Override

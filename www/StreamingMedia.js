@@ -2,9 +2,14 @@
 function StreamingMedia() {
 }
 
-StreamingMedia.prototype.playAudio = function (url, options) {
+StreamingMedia.prototype.playAudioAtTime = function (url, time, options) {
 	options = options || {};
+	options.startTimeInMs = time;
 	cordova.exec(options.successCallback || null, options.errorCallback || null, "StreamingMedia", "playAudio", [url, options]);
+};
+
+StreamingMedia.prototype.playAudio = function (url, options) {
+	this.playAudioAtTime(url, 0, options);
 };
 
 StreamingMedia.prototype.pauseAudio = function (options) {
@@ -22,9 +27,14 @@ StreamingMedia.prototype.stopAudio = function (options) {
     cordova.exec(options.successCallback || null, options.errorCallback || null, "StreamingMedia", "stopAudio", [options]);
 };
 
-StreamingMedia.prototype.playVideo = function (url, options) {
+StreamingMedia.prototype.playVideoAtTime = function (url, time, options) {
 	options = options || {};
+	options.startTimeInMs = time;
 	cordova.exec(options.successCallback || null, options.errorCallback || null, "StreamingMedia", "playVideo", [url, options]);
+};
+
+StreamingMedia.prototype.playVideo = function (url, options) {
+	this.playVideoAtTime(url, 0, options);
 };
 
 
