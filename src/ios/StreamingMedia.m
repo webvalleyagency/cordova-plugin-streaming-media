@@ -27,6 +27,7 @@
     NSString *videoType;
     AVPlayer *movie;
     BOOL controls;
+    NSNumber *startTimeInMs;
 }
 
 NSString * const TYPE_VIDEO = @"VIDEO";
@@ -58,6 +59,12 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
         controls = [[options objectForKey:@"controls"] boolValue];
     } else {
         controls = YES;
+    }
+    
+    if (![options isKindOfClass:[NSNull class]] && [options objectForKey:@"startTimeInMs"]) {
+        startTimeInMs = [options objectForKey:@"startTimeInMs"];
+    } else {
+        startTimeInMs = @0;
     }
     
     if ([type isEqualToString:TYPE_AUDIO]) {
@@ -219,6 +226,12 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
     // handle gestures
     [self handleGestures];
     
+    // add KVO observer for movie rate
+    [movie addObserver:self
+                       forKeyPath:@"rate"
+                          options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+                          context:0];
+    
     [moviePlayer setPlayer:movie];
     [moviePlayer setShowsPlaybackControls:controls];
     [moviePlayer setUpdatesNowPlayingInfoCenter:YES];
@@ -227,7 +240,12 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
     
     // present modally so we get a close button
     [self.viewController presentViewController:moviePlayer animated:YES completion:^(void){
-        [moviePlayer.player play];
+        if (self->startTimeInMs && self->moviePlayer.player.status == AVPlayerStatusReadyToPlay) {
+            int32_t timeScale = self->moviePlayer.player.currentItem.asset.duration.timescale;
+            CMTime seektime = CMTimeMakeWithSeconds([self->startTimeInMs intValue]/1000, timeScale);
+            [self->moviePlayer.player seekToTime:seektime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+        }
+        [self->moviePlayer.player play];
     }];
     
     // add audio image and background color
@@ -235,6 +253,11 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
         if (imageView != nil) {
             [moviePlayer.contentOverlayView setAutoresizesSubviews:YES];
             [moviePlayer.contentOverlayView addSubview:imageView];
+        }
+        if (startTimeInMs) {
+            int32_t timeScale = moviePlayer.player.currentItem.asset.duration.timescale;
+            CMTime seektime = CMTimeMakeWithSeconds([startTimeInMs intValue]/1000, timeScale);
+            [moviePlayer.player seekToTime:seektime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
         }
         moviePlayer.contentOverlayView.backgroundColor = backgroundColor;
         [self.viewController.view addSubview:moviePlayer.view];
@@ -396,10 +419,37 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
      name:UIDeviceOrientationDidChangeNotification
      object:nil];
     
+    [movie removeObserver:self forKeyPath:@"rate"];
+    
     if (moviePlayer) {
         [moviePlayer.player pause];
         [moviePlayer dismissViewControllerAnimated:YES completion:nil];
         moviePlayer = nil;
     }
 }
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    // Observe rate key value (0=stopped, 1=play)
+    if ([keyPath isEqualToString:@"rate"]) {
+        if ([movie rate]) {
+            NSLog(@"Play");
+        } else {
+            NSLog(@"Pause");
+            NSNumber *currentPosition = [NSNumber numberWithFloat:CMTimeGetSeconds(movie.currentItem.currentTime)*1000];
+            NSNumber *mediaDuration = [NSNumber numberWithFloat:CMTimeGetSeconds(movie.currentItem.duration)*1000];
+            
+            if ([currentPosition isEqualToNumber:@0]) {
+                return;
+            }
+            
+            NSDictionary *message = @{@"currentPositionInMs": currentPosition,
+                                      @"finishedTheMedia": @NO,
+                                      @"mediaDurationInMs": mediaDuration};
+            CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:message];
+            result.keepCallback = [NSNumber numberWithBool:YES];
+            [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+        }
+    }
+}
+
 @end
