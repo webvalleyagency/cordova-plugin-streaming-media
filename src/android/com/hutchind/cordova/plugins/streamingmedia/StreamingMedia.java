@@ -51,7 +51,7 @@ public class StreamingMedia extends CordovaPlugin {
 		return play(SimpleAudioStream.class, url, options);
 	}
 	private boolean playVideo(String url, JSONObject options) {
-		return play(SimpleVideoStream.class, url, options);
+		return play(NewPlayer.class, url, options);
 	}
 
 	private boolean play(final Class activityClass, final String url, final JSONObject options) {
@@ -99,8 +99,8 @@ public class StreamingMedia extends CordovaPlugin {
 		if (ACTIVITY_CODE_PLAY_MEDIA == requestCode) {
 			JSONObject resultData = new JSONObject();
 			if (intent != null) {
-				tryToPutPropertyToObject(resultData, "currentPositionInMs", intent.getIntExtra("currentPositionInMs", -1));
-				tryToPutPropertyToObject(resultData, "mediaDurationInMs", intent.getIntExtra("mediaDurationInMs", -1));
+				tryToPutPropertyToObject(resultData, "currentPositionInMs", intent.getLongExtra("currentPositionInMs", -1));
+				tryToPutPropertyToObject(resultData, "mediaDurationInMs", intent.getLongExtra("mediaDurationInMs", -1));
 				tryToPutPropertyToObject(resultData, "finishedTheMedia", intent.getBooleanExtra("finishedTheMedia", false));
 				tryToPutPropertyToObject(resultData, "errorMessage", intent.getStringExtra("errorMessage"));
 			}
