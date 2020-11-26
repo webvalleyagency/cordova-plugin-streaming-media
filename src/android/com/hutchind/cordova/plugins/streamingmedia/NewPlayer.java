@@ -171,7 +171,7 @@ public class NewPlayer extends Activity {
                 finishedTheMedia = true;
 
                 if (shouldAutoClose) {
-                    sendResponseToParent(RESULT_OK, null);
+                    releasePlayer();
                 }
 
                 stateString = "ExoPlayer.STATE_ENDED     -";
