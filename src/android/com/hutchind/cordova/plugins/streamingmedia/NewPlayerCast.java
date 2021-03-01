@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.ext.cast.CastPlayer;
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
@@ -30,6 +31,7 @@ import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.common.images.WebImage;
+import com.kubitini.streaming.R; // BEWARE!! Need to rename this or find better solution
 
 public class NewPlayerCast extends Activity implements SessionAvailabilityListener {
 
@@ -45,6 +47,7 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
 
     // views associated with the players
     private PlayerView playerView;
+    private PlayerControlView castControlView;
 
     // the Cast context
     private CastContext castContext;
@@ -78,6 +81,8 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
 
         setOrientation(b.getString("orientation"));
         setContentView(playerView, playerViewParams);
+
+        castControlView = new PlayerControlView(this);
     }
 
     private void setOrientation(String orientation) {
@@ -148,6 +153,15 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         super.onDestroy();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.cast, menu);
+        CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
+
+        return true;
+    }
+
     /**
      * CastPlayer [SessionAvailabilityListener] implementation.
      */
@@ -184,6 +198,7 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         if (castPlayer == null) {
             castPlayer = new CastPlayer(castContext);
             castPlayer.setSessionAvailabilityListener(this);
+            castControlView.setPlayer(castPlayer);
         }
 
         // start the playback
@@ -222,6 +237,11 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
                 .build();
             MediaQueueItem mediaItem = new MediaQueueItem.Builder(mediaInfo).build();
             castPlayer.loadItem(mediaItem, playbackPosition);
+
+            castPlayer.setPlayWhenReady(playWhenReady);
+            castPlayer.seekTo(currentWindow, playbackPosition);
+            castPlayer.addListener(playbackStateListener);
+            castPlayer.prepare();
         }
     }
 
