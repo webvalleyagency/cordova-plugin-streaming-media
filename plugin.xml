@@ -56,6 +56,7 @@
 		<framework src="com.google.android.exoplayer:exoplayer:2.12.1"/>
 		<framework src="com.google.android.exoplayer:extension-cast:2.12.1"/>
 		<framework src="com.google.android.gms:play-services-cast-framework:15.0.0"/>
+		<framework src="com.android.support:appcompat-v7:+"/>
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="StreamingMedia">
 				<param name="android-package" value="com.hutchind.cordova.plugins.streamingmedia.StreamingMedia" />
@@ -65,21 +66,20 @@
 			<uses-permission android:name="android.permission.INTERNET" />
 		</config-file>
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<activity android:configChanges="orientation|screenSize" android:name="com.hutchind.cordova.plugins.streamingmedia.SimpleAudioStream" android:label="Simple Audio Stream"></activity>
-			<activity android:configChanges="orientation|screenSize" android:name="com.hutchind.cordova.plugins.streamingmedia.SimpleVideoStream" android:label="Simple Video Stream"></activity>
-			<activity android:configChanges="orientation|screenSize" android:name="com.hutchind.cordova.plugins.streamingmedia.NewPlayer" android:label="New Player"></activity>
-			<activity android:configChanges="orientation|screenSize" android:name="com.hutchind.cordova.plugins.streamingmedia.NewPlayerCast" android:label="New Player with Cast"></activity>
+			<activity android:configChanges="orientation|screenSize" android:name="com.hutchind.cordova.plugins.streamingmedia.MainActivity" android:label="Main"></activity>
 			<meta-data android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME" android:value="com.hutchind.cordova.plugins.streamingmedia.CastOptionsProvider" />
 		</config-file>
-		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/SimpleAudioStream.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
-		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/SimpleVideoStream.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/StreamingMedia.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
-		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/ImageLoadTask.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
-		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/NewPlayer.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
-		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/NewPlayerCast.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
+		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/DemoUtil.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
+		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/MainActivity.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
+		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/PlayerManager.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/CastOptionsProvider.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 
-		<source-file src="src/res/menu/cast.xml" target-dir="res/menu/"/>
+		<source-file src="src/android/res/drawable/ic_plus.xml" target-dir="res/drawable" />
+		<source-file src="src/android/res/layout/cast_context_error.xml" target-dir="res/layout" />
+		<source-file src="src/android/res/layout/main_activity.xml" target-dir="res/layout" />
+		<source-file src="src/android/res/layout/sample_list.xml" target-dir="res/layout" />
+		<source-file src="src/android/res/menu/menu.xml" target-dir="res/menu" />
 	</platform>
 
 	<platform name="amazon-fireos">
