@@ -56,6 +56,8 @@
 		<framework src="com.google.android.exoplayer:exoplayer:2.12.1"/>
 		<framework src="com.google.android.exoplayer:extension-cast:2.12.1"/>
 		<framework src="com.google.android.gms:play-services-cast-framework:15.0.0"/>
+		<framework src="androidx.appcompat:appcompat:1.0.0"/>
+		<framework src="androidx.mediarouter:mediarouter:1.2.2"/>
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="StreamingMedia">
 				<param name="android-package" value="com.hutchind.cordova.plugins.streamingmedia.StreamingMedia" />
@@ -79,7 +81,7 @@
 		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/NewPlayerCast.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/CastOptionsProvider.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 
-		<source-file src="src/res/menu/cast.xml" target-dir="res/menu/"/>
+		<source-file src="src/res/layout/main.xml" target-dir="res/layout/"/>
 	</platform>
 
 	<platform name="amazon-fireos">
