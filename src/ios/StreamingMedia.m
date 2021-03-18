@@ -430,7 +430,9 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
      name:UIDeviceOrientationDidChangeNotification
      object:nil];
 
-    [movie removeObserver:self forKeyPath:@"rate"];
+    if (movie.observationInfo) {
+        [movie removeObserver:self forKeyPath:@"rate"];
+    }
 
     if (moviePlayer) {
         [moviePlayer.player pause];
