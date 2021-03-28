@@ -76,6 +76,7 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         playbackStateListener = new PlaybackStateListener();
         playerView = new PlayerView(this);
         playerView.setBackgroundColor(Color.BLACK);
+        playerView.setKeepScreenOn(true);
         RelativeLayout.LayoutParams playerViewParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         playerViewParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 
