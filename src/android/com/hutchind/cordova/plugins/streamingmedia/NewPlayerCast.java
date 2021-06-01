@@ -3,25 +3,18 @@ package com.hutchind.cordova.plugins.streamingmedia;
 import android.net.Uri;
 import android.util.Log;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.graphics.Color;
-import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.mediarouter.app.MediaRouteButton;
-import android.widget.RelativeLayout;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ext.cast.CastPlayer;
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.MediaItem;
@@ -31,8 +24,6 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.common.images.WebImage;
-import android.view.View;
 import com.kubitini.streaming.R; // BEWARE!! Need to rename this or find better solution
 
 public class NewPlayerCast extends AppCompatActivity implements SessionAvailabilityListener {
@@ -72,10 +63,7 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         setContentView(R.layout.main);
 
         mMediaRouteButton = (MediaRouteButton) findViewById(R.id.media_route_button);
-        // mMediaRouteButton = new MediaRouteButton(getApplicationContext(), null, R.style.Theme_MyAwesomeApp_Blue);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
-        // RelativeLayout lay = (RelativeLayout) findViewById(R.id.mainLayout);
-        // lay.addView((View) mMediaRouteButton);
 
         castContext = CastContext.getSharedInstance(this);
         Bundle b = getIntent().getExtras();
@@ -86,9 +74,6 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         playbackStateListener = new PlaybackStateListener();
         playerView = findViewById(R.id.video_view);
         playerView.setKeepScreenOn(true);
-        // playerView.setBackgroundColor(Color.BLACK);
-        /* RelativeLayout.LayoutParams playerViewParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        playerViewParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); */
 
         setOrientation(b.getString("orientation"));
 
@@ -162,15 +147,6 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         currentPlayer = null;
         super.onDestroy();
     }
-
-    /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.cast, menu);
-        CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
-
-        return true;
-    } */
 
     /**
      * CastPlayer [SessionAvailabilityListener] implementation.
