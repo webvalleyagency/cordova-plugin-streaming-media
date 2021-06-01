@@ -1,5 +1,6 @@
 package com.hutchind.cordova.plugins.streamingmedia;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ext.cast.CastPlayer;
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.util.MimeTypes;
@@ -24,7 +26,7 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
-import com.kubitini.streaming.R; // BEWARE!! Need to rename this or find better solution
+import com.kubitini.streaming.R;
 
 public class NewPlayerCast extends AppCompatActivity implements SessionAvailabilityListener {
 
@@ -74,6 +76,9 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         playbackStateListener = new PlaybackStateListener();
         playerView = findViewById(R.id.video_view);
         playerView.setKeepScreenOn(true);
+
+        DefaultTimeBar timer = findViewById(R.id.exo_progress);
+        timer.setBackgroundColor(Color.argb(0, 0, 0, 0));
 
         setOrientation(b.getString("orientation"));
 
