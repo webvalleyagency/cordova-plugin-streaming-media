@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.mediarouter.app.MediaRouteButton;
 import android.widget.RelativeLayout;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -31,9 +32,10 @@ import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.common.images.WebImage;
+import android.view.View;
 import com.kubitini.streaming.R; // BEWARE!! Need to rename this or find better solution
 
-public class NewPlayerCast extends Activity implements SessionAvailabilityListener {
+public class NewPlayerCast extends AppCompatActivity implements SessionAvailabilityListener {
 
     private static final String TAG = NewPlayerCast.class.getName();
 
@@ -51,7 +53,7 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
 
     // the Cast context
     private CastContext castContext;
-    private MenuItem castButton;
+    private MediaRouteButton mMediaRouteButton;
 
     // Player state params
     private Boolean playWhenReady = true;
@@ -66,6 +68,14 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setTheme(R.style.Theme_MyAwesomeApp_Blue);
+        setContentView(R.layout.main);
+
+        mMediaRouteButton = (MediaRouteButton) findViewById(R.id.media_route_button);
+        // mMediaRouteButton = new MediaRouteButton(getApplicationContext(), null, R.style.Theme_MyAwesomeApp_Blue);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
+        // RelativeLayout lay = (RelativeLayout) findViewById(R.id.mainLayout);
+        // lay.addView((View) mMediaRouteButton);
 
         castContext = CastContext.getSharedInstance(this);
         Bundle b = getIntent().getExtras();
@@ -74,14 +84,13 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         shouldAutoClose = b.getBoolean("shouldAutoClose", true);
 
         playbackStateListener = new PlaybackStateListener();
-        playerView = new PlayerView(this);
-        playerView.setBackgroundColor(Color.BLACK);
+        playerView = findViewById(R.id.video_view);
         playerView.setKeepScreenOn(true);
-        RelativeLayout.LayoutParams playerViewParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        playerViewParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        // playerView.setBackgroundColor(Color.BLACK);
+        /* RelativeLayout.LayoutParams playerViewParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        playerViewParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE); */
 
         setOrientation(b.getString("orientation"));
-        setContentView(playerView, playerViewParams);
 
         castControlView = new PlayerControlView(this);
     }
@@ -154,14 +163,14 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         super.onDestroy();
     }
 
-    @Override
+    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.cast, menu);
         CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
 
         return true;
-    }
+    } */
 
     /**
      * CastPlayer [SessionAvailabilityListener] implementation.
@@ -203,7 +212,7 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         }
 
         // start the playback
-        if (castPlayer != null && castPlayer.isCastSessionAvailable() == true) {
+        if (castPlayer != null && castPlayer.isCastSessionAvailable()) {
             playOnPlayer(castPlayer);
         } else {
             playOnPlayer(exoPlayer);
