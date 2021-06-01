@@ -35,7 +35,7 @@ import com.google.android.gms.common.images.WebImage;
 import android.view.View;
 import com.kubitini.streaming.R; // BEWARE!! Need to rename this or find better solution
 
-public class NewPlayerCast extends Activity implements SessionAvailabilityListener {
+public class NewPlayerCast extends AppCompatActivity implements SessionAvailabilityListener {
 
     private static final String TAG = NewPlayerCast.class.getName();
 
@@ -68,13 +68,14 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setTheme(R.style.Theme_MyAwesomeApp_Blue);
         setContentView(R.layout.main);
 
-        // mMediaRouteButton = (MediaRouteButton) findViewById(R.id.media_route_button);
-        mMediaRouteButton = new MediaRouteButton(getApplicationContext());
+        mMediaRouteButton = (MediaRouteButton) findViewById(R.id.media_route_button);
+        // mMediaRouteButton = new MediaRouteButton(getApplicationContext(), null, R.style.Theme_MyAwesomeApp_Blue);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
-        RelativeLayout lay = (RelativeLayout) findViewById(R.id.mainLayout);
-        lay.addView((View) mMediaRouteButton);
+        // RelativeLayout lay = (RelativeLayout) findViewById(R.id.mainLayout);
+        // lay.addView((View) mMediaRouteButton);
 
         castContext = CastContext.getSharedInstance(this);
         Bundle b = getIntent().getExtras();
@@ -210,7 +211,7 @@ public class NewPlayerCast extends Activity implements SessionAvailabilityListen
         }
 
         // start the playback
-        if (castPlayer != null && castPlayer.isCastSessionAvailable() == true) {
+        if (castPlayer != null && castPlayer.isCastSessionAvailable()) {
             playOnPlayer(castPlayer);
         } else {
             playOnPlayer(exoPlayer);

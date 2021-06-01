@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MyAwesomeApp.Base" parent="Theme.AppCompat.NoActionBar">
+        <!-- Your common styles -->
+    </style>
+
+    <style name="Theme.MyAwesomeApp.Blue" parent="Theme.MyAwesomeApp.Base">
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@color/exo_black_opacity_70</item>
+        <item name="colorAccent">@color/exo_white_opacity_70</item>
+    </style>
+</resources>
