@@ -33,6 +33,8 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
     private static final String TAG = NewPlayerCast.class.getName();
 
     private String videoClipUrl;
+    private String videoTitle;
+    private String videoSubTitle;
 
     // the local and remote players
     private SimpleExoPlayer exoPlayer = null;
@@ -72,6 +74,8 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         videoClipUrl = b.getString("mediaUrl");
         playbackPosition = b.getInt("startTimeInMs", 0);
         shouldAutoClose = b.getBoolean("shouldAutoClose", true);
+        videoTitle = b.getString("title", "");
+        videoSubTitle = b.getString("subtitle", "");
 
         playbackStateListener = new PlaybackStateListener();
         playerView = findViewById(getResourceId("video_view", "id"));
@@ -218,8 +222,8 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         // if the current player is the CastPlayer, play from it
         if (currentPlayer == castPlayer) {
             MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-            metadata.putString(MediaMetadata.KEY_TITLE, "Title");
-            metadata.putString(MediaMetadata.KEY_SUBTITLE, "Subtitle");
+            metadata.putString(MediaMetadata.KEY_TITLE, videoTitle);
+            metadata.putString(MediaMetadata.KEY_SUBTITLE, videoSubTitle);
 
             MediaInfo mediaInfo = new MediaInfo.Builder(videoClipUrl)
                 .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
