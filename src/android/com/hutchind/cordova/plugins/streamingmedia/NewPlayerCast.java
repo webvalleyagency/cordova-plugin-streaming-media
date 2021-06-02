@@ -1,5 +1,6 @@
 package com.hutchind.cordova.plugins.streamingmedia;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
@@ -26,7 +27,6 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
-import com.kubitini.streaming.R;
 
 public class NewPlayerCast extends AppCompatActivity implements SessionAvailabilityListener {
 
@@ -61,10 +61,10 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setTheme(R.style.Theme_MyAwesomeApp_Blue);
-        setContentView(R.layout.main);
+        setTheme(getResourceId("Theme.MyAwesomeApp.Blue", "style"));
+        setContentView(getResourceId("main", "layout"));
 
-        mMediaRouteButton = (MediaRouteButton) findViewById(R.id.media_route_button);
+        mMediaRouteButton = (MediaRouteButton) findViewById(getResourceId("media_route_button", "id"));
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mMediaRouteButton);
 
         castContext = CastContext.getSharedInstance(this);
@@ -74,10 +74,10 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         shouldAutoClose = b.getBoolean("shouldAutoClose", true);
 
         playbackStateListener = new PlaybackStateListener();
-        playerView = findViewById(R.id.video_view);
+        playerView = findViewById(getResourceId("video_view", "id"));
         playerView.setKeepScreenOn(true);
 
-        DefaultTimeBar timer = findViewById(R.id.exo_progress);
+        DefaultTimeBar timer = findViewById(getResourceId("exo_progress", "id"));
         timer.setBackgroundColor(Color.argb(0, 0, 0, 0));
 
         setOrientation(b.getString("orientation"));
@@ -316,6 +316,12 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         if (currentPlayer == castPlayer) {
             releaseRemotePlayer();
         }
+    }
+
+    private int getResourceId(String name, String type) {
+        Context context = getApplicationContext();
+
+        return context.getResources().getIdentifier(name, type, context.getPackageName());
     }
 
     private class PlaybackStateListener implements Player.EventListener {

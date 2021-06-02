@@ -81,8 +81,8 @@
 		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/NewPlayerCast.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 		<source-file src="src/android/com/hutchind/cordova/plugins/streamingmedia/CastOptionsProvider.java" target-dir="src/com/hutchind/cordova/plugins/streamingmedia" />
 
-		<source-file src="src/res/layout/main.xml" target-dir="res/layout/"/>
-		<source-file src="src/res/values/styles.xml" target-dir="res/values/"/>
+		<resource-file src="src/res/layout/main.xml" target="res/layout/main.xml"/>
+		<resource-file src="src/res/values/styles.xml" target="res/values/styles.xml"/>
 	</platform>
 
 	<platform name="amazon-fireos">
