@@ -46,7 +46,7 @@ cordova plugin add https://github.com/nchutchind/cordova-plugin-streaming-media
     },
     orientation: 'landscape',
     shouldAutoClose: true,  // true(default)/false
-    controls: true, // true(default)/false. Used to hide controls on fullscreen
+    controls: "full", // full(default)/simple/none. Used to hide controls on fullscreen. "full" = full controls | "simple" = only play/pause | "none" = no controlls
     startTimeInMs: 5000, // (optional) Alternatively instead of using this option you can call: window.plugins.streamingMedia.playVideoAtTime(videoUrl, 5000)
     title: 'Best Video', // (optional) Title used for streaming via Chromecast
     subtitle: 'By Best Producer', // (optional) Subtitle used for streaming via Chromecast

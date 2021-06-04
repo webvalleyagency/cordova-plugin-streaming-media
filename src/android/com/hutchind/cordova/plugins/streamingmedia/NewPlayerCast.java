@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.content.pm.ActivityInfo;
@@ -76,6 +77,7 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         shouldAutoClose = b.getBoolean("shouldAutoClose", true);
         videoTitle = b.getString("title", "");
         videoSubTitle = b.getString("subtitle", "");
+        String controlsVisibilityMode = b.getString("controls", "full");
 
         playbackStateListener = new PlaybackStateListener();
         playerView = findViewById(getResourceId("video_view", "id"));
@@ -84,9 +86,25 @@ public class NewPlayerCast extends AppCompatActivity implements SessionAvailabil
         DefaultTimeBar timer = findViewById(getResourceId("exo_progress", "id"));
         timer.setBackgroundColor(Color.argb(0, 0, 0, 0));
 
+        if (controlsVisibilityMode.equals("none")) {
+            playerView.setUseController(false);
+        } else if (controlsVisibilityMode.equals("simple")) {
+            setSimpleControls(timer);
+        }
+
         setOrientation(b.getString("orientation"));
 
         castControlView = new PlayerControlView(this);
+    }
+
+    private void setSimpleControls(DefaultTimeBar timer) {
+        timer.setVisibility(View.GONE);
+        findViewById(getResourceId("exo_duration", "id")).setVisibility(View.GONE);
+        findViewById(getResourceId("exo_position", "id")).setVisibility(View.GONE);
+        playerView.setShowRewindButton(false);
+        playerView.setShowFastForwardButton(false);
+        playerView.setShowPreviousButton(false);
+        playerView.setShowNextButton(false);
     }
 
     private void setOrientation(String orientation) {
