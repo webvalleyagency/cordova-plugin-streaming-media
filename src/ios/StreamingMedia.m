@@ -26,8 +26,11 @@
     NSString *mOrientation;
     NSString *videoType;
     AVPlayer *movie;
-    BOOL controls;
+    NSInteger controls;
     NSNumber *startTimeInMs;
+    UIButton *playPauseButton;
+    UIButton *closeButton;
+    BOOL overlayShown;
 }
 
 NSString * const TYPE_VIDEO = @"VIDEO";
@@ -56,9 +59,9 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
     }
 
     if (![options isKindOfClass:[NSNull class]] && [options objectForKey:@"controls"]) {
-        controls = [[options objectForKey:@"controls"] boolValue];
+        controls = [[options objectForKey:@"controls"] integerValue];
     } else {
-        controls = YES;
+        controls = 2;
     }
 
     if (![options isKindOfClass:[NSNull class]] && [options objectForKey:@"startTimeInMs"]) {
@@ -233,7 +236,14 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
                           context:0];
 
     [moviePlayer setPlayer:movie];
-    [moviePlayer setShowsPlaybackControls:controls];
+    if (controls == 0 || controls == 1) {
+        [moviePlayer setShowsPlaybackControls:NO];
+        if (controls == 1) {
+            [self setSimpleControls];
+        }
+    } else {
+        [moviePlayer setShowsPlaybackControls:YES];
+    }
     [moviePlayer setUpdatesNowPlayingInfoCenter:YES];
 
     if(@available(iOS 11.0, *)) { [moviePlayer setEntersFullScreenWhenPlaybackBegins:YES]; }
@@ -463,6 +473,71 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
             [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         }
     }
+}
+
+- (void)setSimpleControls {
+    playPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    playPauseButton.frame = CGRectMake(0, 0, 100, 100);
+    playPauseButton.center = moviePlayer.view.center;
+    [moviePlayer.contentOverlayView addSubview:playPauseButton];
+    [playPauseButton setTitle:@"pause" forState:UIControlStateNormal];
+    [playPauseButton addTarget:self action:@selector(togglePlayPause) forControlEvents:UIControlEventTouchUpInside];
+    
+    if (@available(iOS 13.0, *)) {
+        closeButton = [UIButton buttonWithType:UIButtonTypeClose];
+    } else {
+        closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [closeButton setTitle:@"X" forState:UIControlStateNormal];
+    }
+    closeButton.frame = CGRectMake(64, 16, 40, 40);
+    [moviePlayer.contentOverlayView addSubview:closeButton];
+    [closeButton addTarget:self action:@selector(cleanup) forControlEvents:UIControlEventTouchUpInside];
+    
+    overlayShown = YES;
+    UIButton *overlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [overlayButton addTarget:self action:@selector(toggleOverlay) forControlEvents:UIControlEventTouchUpInside];
+    overlayButton.frame = self.viewController.view.bounds;
+    [moviePlayer.contentOverlayView addSubview:overlayButton];
+    
+    [moviePlayer.contentOverlayView bringSubviewToFront:playPauseButton];
+    [moviePlayer.contentOverlayView bringSubviewToFront:closeButton];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self->overlayShown) {
+            [self toggleOverlay];
+        }
+    });
+}
+
+- (void)togglePlayPause {
+    if ([movie rate]) {
+        [playPauseButton setTitle:@"play" forState:UIControlStateNormal];
+        [movie pause];
+    } else {
+        [playPauseButton setTitle:@"pause" forState:UIControlStateNormal];
+        [movie play];
+    }
+}
+
+- (void)toggleOverlay {
+    if (overlayShown) {
+        [UIView animateWithDuration:0.3 animations:^{
+            self->playPauseButton.alpha = 0;
+            [self->playPauseButton setHidden:YES];
+            self->closeButton.alpha = 0;
+            [self->closeButton setHidden:YES];
+            self->overlayShown = NO;
+        }];
+        return;
+    }
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        self->playPauseButton.alpha = 1;
+        [self->playPauseButton setHidden:NO];
+        self->closeButton.alpha = 1;
+        [self->closeButton setHidden:NO];
+        self->overlayShown = YES;
+    }];
 }
 
 @end
