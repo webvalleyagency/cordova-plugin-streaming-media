@@ -480,7 +480,7 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
     playPauseButton.frame = CGRectMake(0, 0, 100, 100);
     playPauseButton.center = moviePlayer.view.center;
     [moviePlayer.contentOverlayView addSubview:playPauseButton];
-    [playPauseButton setTitle:@"pause" forState:UIControlStateNormal];
+    [playPauseButton setImage:[UIImage imageNamed:@"pauseButton"] forState:UIControlStateNormal];
     [playPauseButton addTarget:self action:@selector(togglePlayPause) forControlEvents:UIControlEventTouchUpInside];
     
     if (@available(iOS 13.0, *)) {
@@ -502,6 +502,10 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
     [moviePlayer.contentOverlayView bringSubviewToFront:playPauseButton];
     [moviePlayer.contentOverlayView bringSubviewToFront:closeButton];
     
+    UISwipeGestureRecognizer *swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(cleanup)];
+    [swipeDown setDirection:UISwipeGestureRecognizerDirectionDown];
+    [moviePlayer.contentOverlayView addGestureRecognizer:swipeDown];
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (self->overlayShown) {
             [self toggleOverlay];
@@ -511,10 +515,10 @@ NSString * const DEFAULT_IMAGE_SCALE = @"center";
 
 - (void)togglePlayPause {
     if ([movie rate]) {
-        [playPauseButton setTitle:@"play" forState:UIControlStateNormal];
+        [playPauseButton setImage:[UIImage imageNamed:@"playButton"] forState:UIControlStateNormal];
         [movie pause];
     } else {
-        [playPauseButton setTitle:@"pause" forState:UIControlStateNormal];
+        [playPauseButton setImage:[UIImage imageNamed:@"pauseButton"] forState:UIControlStateNormal];
         [movie play];
     }
 }
